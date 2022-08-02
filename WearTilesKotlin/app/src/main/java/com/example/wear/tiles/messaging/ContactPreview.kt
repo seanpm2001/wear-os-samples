@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.wear.tiles
+package com.example.wear.tiles.messaging
 
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
@@ -23,15 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.tiles.ActionBuilders
 import androidx.wear.tiles.ModifiersBuilders
 import androidx.wear.tiles.ResourceBuilders
+import com.example.wear.tiles.R
 import com.example.wear.tiles.messaging.MessagingRepo
 import com.example.wear.tiles.messaging.MessagingTileRenderer
 import com.example.wear.tiles.messaging.bitmapToImageResource
+import com.example.wear.tiles.tools.emptyClickable
 import com.google.android.horologist.compose.tools.LayoutElementPreview
-
-val emptyClickable = ModifiersBuilders.Clickable.Builder()
-    .setOnClick(ActionBuilders.LoadAction.Builder().build())
-    .setId("")
-    .build()
 
 @Preview(
     backgroundColor = 0xff000000, showBackground = true, widthDp = 100, heightDp = 100
