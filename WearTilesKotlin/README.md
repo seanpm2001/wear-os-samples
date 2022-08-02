@@ -16,7 +16,7 @@ Each Tile extends TileProviderService and implements onTileRequest and onResourc
 Screenshots
 -------------
 
-<img src="app/src/main/res/drawable/tile_goals.png" height="400" alt="Screenshot Goals Tile"/> <img src="app/src/main/res/drawable/tile_media.png" height="400" alt="Screenshot"/> <img src="app/src/main/res/drawable/tile_messaging.png" height="400" alt="Screenshot"/>
+<img src="app/src/main/res/drawable/tile_messaging.png" height="400" alt="Screenshot"/>
 
 Getting Started
 ---------------
