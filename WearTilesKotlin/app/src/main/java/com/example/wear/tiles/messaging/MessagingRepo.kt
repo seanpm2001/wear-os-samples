@@ -60,10 +60,10 @@ class MessagingRepo(private val context: Context) {
                 id = 1, initials = "AC", name = "Ali C", avatarUrl = "$avatarPath/ali.png"
             ),
             Contact(
-                id = 2, initials = "FS", name = "Felipe S", avatarUrl = null
+                id = 2, initials = "TB", name = "Taylor B", avatarUrl = "$avatarPath/taylor.jpg"
             ),
             Contact(
-                id = 3, initials = "TB", name = "Taylor B", avatarUrl = "$avatarPath/taylor.jpg"
+                id = 3, initials = "FS", name = "Felipe S", avatarUrl = null
             ),
             Contact(
                 id = 4, initials = "JG", name = "Judith G", avatarUrl = null
