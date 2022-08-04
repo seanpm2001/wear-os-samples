@@ -17,7 +17,7 @@ package com.example.wear.tiles.di
 
 import android.content.Context
 import coil.ImageLoader
-import com.example.wear.tiles.messaging.MessagingRepo
+import com.example.wear.tiles.messaging.MessagingRepository
 import com.example.wear.tiles.messaging.MessagingTileRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,14 +27,15 @@ import java.io.Closeable
 
 // https://developer.android.com/training/dependency-injection/manual
 class AppContainer(application: Context) : Closeable {
+    // TODO: inline
     val imageLoader: ImageLoader = ImageLoader.Builder(application)
         .respectCacheHeaders(false)
         .build()
-    val repo: MessagingRepo = MessagingRepo(application)
+    val repo: MessagingRepository = MessagingRepository(application)
     val renderer: MessagingTileRenderer = MessagingTileRenderer(application)
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+//    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     override fun close() {
-        scope.cancel()
+//        scope.cancel()
     }
 }

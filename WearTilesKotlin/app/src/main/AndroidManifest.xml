@@ -21,7 +21,6 @@
     <uses-feature android:name="android.hardware.type.watch" />
 
     <application
-        android:name=".TilesApplication"
         android:allowBackup="false"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -34,7 +33,7 @@
             android:name="com.example.wear.tiles.messaging.MessagingTileService"
             android:exported="true"
             android:label="@string/tile_messaging_label"
-            android:description="@string/tile_description"
+            android:description="@string/tile_messaging_description"
             android:icon="@drawable/ic_message_24"
             android:permission="com.google.android.wearable.permission.BIND_TILE_PROVIDER">
             <intent-filter>

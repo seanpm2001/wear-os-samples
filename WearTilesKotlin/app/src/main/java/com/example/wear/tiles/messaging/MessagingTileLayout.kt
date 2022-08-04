@@ -57,7 +57,7 @@ internal fun messagingTileLayout(
             .addButtonContent(searchLayout(context, emptyClickable))
             .build()
     ).setPrimaryChipContent(
-        CompactChip.Builder(context, "New", emptyClickable, deviceParameters)
+        CompactChip.Builder(context, context.getString(R.string.tile_messaging_create_new), emptyClickable, deviceParameters)
             .setChipColors(
                 ChipColors(
                     /*backgroundColor=*/ context.getColor(R.color.primary),
@@ -95,8 +95,9 @@ private fun searchLayout(
     context: Context,
     clickable: ModifiersBuilders.Clickable,
 ) = Button.Builder(context, clickable)
-    .setContentDescription("Search")
+    .setContentDescription(context.getString(R.string.tile_messaging_search))
     .setIconContent(MessagingTileRenderer.ID_IC_SEARCH)
+//    .setButtonColors(ButtonColors.primaryButtonColors()) // TODO: wire it up
     .setButtonColors(
         ButtonColors(
             /*backgroundColor=*/ context.getColor(R.color.secondary),
@@ -109,7 +110,7 @@ private fun searchLayout(
 @Composable
 private fun MessageTilePreview() {
     val context = LocalContext.current
-    val state = MessagingTileState(MessagingRepo.knownContacts)
+    val state = MessagingTileState(MessagingRepository.knownContacts)
     LayoutRootPreview(
         messagingTileLayout(
             context,
@@ -141,7 +142,7 @@ private fun ContactPreview() {
     LayoutElementPreview(
         contactLayout(
             context = LocalContext.current,
-            contact = MessagingRepo.knownContacts[0],
+            contact = MessagingRepository.knownContacts[0],
             clickable = emptyClickable
         )
     )
@@ -151,7 +152,7 @@ private fun ContactPreview() {
 @Composable
 private fun ContactWithImagePreview() {
     val context = LocalContext.current
-    val contact = MessagingRepo.knownContacts[1]
+    val contact = MessagingRepository.knownContacts[1]
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ali)
 
     val layout = contactLayout(

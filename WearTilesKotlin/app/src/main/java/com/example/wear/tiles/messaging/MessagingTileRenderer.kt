@@ -17,21 +17,11 @@ package com.example.wear.tiles.messaging
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.annotation.DrawableRes
-import androidx.wear.tiles.ColorBuilders
 import androidx.wear.tiles.DeviceParametersBuilders
-import androidx.wear.tiles.DimensionBuilders
 import androidx.wear.tiles.LayoutElementBuilders.LayoutElement
-import androidx.wear.tiles.ResourceBuilders
-import androidx.wear.tiles.ResourceBuilders.ImageResource
 import androidx.wear.tiles.ResourceBuilders.Resources
-import androidx.wear.tiles.material.ChipColors
-import androidx.wear.tiles.material.CompactChip
-import androidx.wear.tiles.material.TitleChip
-import androidx.wear.tiles.material.layouts.PrimaryLayout
 import com.example.wear.tiles.R
-import com.example.wear.tiles.golden.GoldenTilesColors
-import com.example.wear.tiles.tools.emptyClickable
+import com.google.android.horologist.tiles.images.drawableResToImageResource
 import com.google.android.horologist.tiles.render.SingleTileLayoutRenderer
 
 class MessagingTileRenderer(context: Context) :
@@ -41,28 +31,7 @@ class MessagingTileRenderer(context: Context) :
         state: MessagingTileState,
         deviceParameters: DeviceParametersBuilders.DeviceParameters
     ): LayoutElement {
-        return PrimaryLayout.Builder(deviceParameters)
-            .setContent(
-                TitleChip.Builder(context, "Start", emptyClickable, deviceParameters)
-                    .setChipColors(
-                        ChipColors(
-                            /*backgroundColor=*/ ColorBuilders.argb(GoldenTilesColors.Yellow),
-                            /*contentColor=*/ ColorBuilders.argb(GoldenTilesColors.Black)
-                        )
-                    )
-                    .build()
-            ).setPrimaryChipContent(
-                CompactChip.Builder(context, "New", emptyClickable, deviceParameters)
-                    .setChipColors(
-                        ChipColors(
-                            /*backgroundColor=*/ ColorBuilders.argb(GoldenTilesColors.DarkYellow),
-                            /*contentColor=*/ ColorBuilders.argb(GoldenTilesColors.White)
-                        )
-                    )
-                    .build()
-            ).build()
-
-//        return messagingTileLayout(context, deviceParameters, state)
+        return messagingTileLayout(context, deviceParameters, state)
     }
 
     override fun Resources.Builder.produceRequestedResources(
@@ -72,7 +41,8 @@ class MessagingTileRenderer(context: Context) :
     ) {
         if (resourceIds.isEmpty() || resourceIds.contains(ID_IC_SEARCH)) {
             addIdToImageMapping(
-                ID_IC_SEARCH, imageResourceFrom(R.drawable.ic_search)
+                ID_IC_SEARCH,
+                drawableResToImageResource(R.drawable.ic_search)
             )
         }
 
@@ -80,27 +50,11 @@ class MessagingTileRenderer(context: Context) :
         resourceResults.forEach { (contact, bitmap) ->
             val imageResource = bitmapToImageResource(bitmap)
             // Add each created image resource to the list
-            addIdToImageMapping(
-                "$ID_CONTACT_PREFIX${contact.id}", imageResource
-            )
+            addIdToImageMapping("$ID_CONTACT_PREFIX${contact.id}", imageResource)
         }
     }
 
-    private fun imageResourceFrom(@DrawableRes resourceId: Int) = ImageResource.Builder()
-        .setAndroidResourceByResId(
-            ResourceBuilders.AndroidImageResourceByResId.Builder()
-                .setResourceId(resourceId)
-                .build()
-        )
-        .build()
-
     companion object {
-        // Dimensions
-        internal val SPACING_TITLE_SUBTITLE = DimensionBuilders.dp(4f)
-        internal val SPACING_SUBTITLE_CONTACTS = DimensionBuilders.dp(12f)
-        internal val SPACING_CONTACTS_HORIZONTAL = DimensionBuilders.dp(8f)
-        internal val SPACING_CONTACTS_VERTICAL = DimensionBuilders.dp(4f)
-
         // Resource identifiers for images
         internal const val ID_IC_SEARCH = "ic_search"
         internal const val ID_CONTACT_PREFIX = "contact:"

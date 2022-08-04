@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "contacts")
 
-class MessagingRepo(private val context: Context) {
+class MessagingRepository(private val context: Context) {
     fun getFavoriteContacts(): Flow<List<Contact>> = context.dataStore.data.map { preferences ->
         val count = preferences[intPreferencesKey("contact.count")] ?: 0
 
@@ -48,7 +48,7 @@ class MessagingRepo(private val context: Context) {
     }
 
     companion object {
-        val avatarPath =
+        private const val avatarPath =
             "https://github.com/android/wear-os-samples/raw/main/WearTilesKotlin/" +
                 "app/src/main/res/drawable-nodpi"
 

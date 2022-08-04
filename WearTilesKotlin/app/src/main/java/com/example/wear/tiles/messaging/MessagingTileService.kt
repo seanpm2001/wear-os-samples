@@ -16,13 +16,14 @@
 package com.example.wear.tiles.messaging
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import androidx.wear.tiles.RequestBuilders.ResourcesRequest
 import androidx.wear.tiles.RequestBuilders.TileRequest
 import androidx.wear.tiles.ResourceBuilders.Resources
 import androidx.wear.tiles.TileBuilders.Tile
+import coil.Coil
 import coil.ImageLoader
-import com.example.wear.tiles.TilesApplication
 import com.google.android.horologist.tiles.CoroutinesTileService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -31,77 +32,88 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * Creates a Messaging Tile, showing your favorite contacts and a button to search other contacts.
- * This is a demo tile only, so the buttons don't actually work.
+ * Creates a Messaging tile, showing up to 4 contacts, an icon button and compact chip.
  *
- * The main function, [onTileRequest], is triggered when the system calls for a tile and implements
- * ListenableFuture which allows the Tile to be returned asynchronously.
+ * It extends [CoroutinesTileService], a Coroutine-friendly wrapper around
+ * [androidx.wear.tiles.TileService], and implements [tileRequest] and [resourcesRequest].
  *
- * Resources are provided with the [onResourcesRequest] method, which is triggered when the tile
+ * The main function, [tileRequest], is triggered when the system calls for a tile and implements
+ * ListenableFuture which allows the Tile to be returned asynchronously. // TODO:
+ *
+ * Resources are provided with the [resourcesRequest] method, which is triggered when the tile
  * uses an Image.
  */
 class MessagingTileService : CoroutinesTileService() {
-    private lateinit var tileStateFlow: StateFlow<MessagingTileState?>
+
     private lateinit var renderer: MessagingTileRenderer
-    private lateinit var repo: MessagingRepo
+    private lateinit var repo: MessagingRepository
     private lateinit var imageLoader: ImageLoader
+    private lateinit var tileStateFlow: StateFlow<MessagingTileState?>
 
     override fun onCreate() {
         super.onCreate()
-
-        val appContainer = (application as TilesApplication).appContainer
-        renderer = appContainer.renderer
-        repo = appContainer.repo
-        imageLoader = ImageLoader(this)
-
-        tileStateFlow = repo.getFavoriteContacts()
-            .map {
-                buildState(it)
-            }
-            .stateIn(
-                lifecycleScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = null
-            )
+        renderer = MessagingTileRenderer(application)
+        repo = MessagingRepository(application)
+        imageLoader = Coil.imageLoader(application)
+        tileStateFlow = createTileStateFlow()
+        Log.d("!!!", "messaging tile service = onCreate")
     }
 
-    private fun buildState(contacts: List<Contact>): MessagingTileState {
-        return MessagingTileState(contacts)
-    }
+    /**
+     * TODO: why stateFlow
+     * Creates a [StateFlow] object that can be used to store the latest tile state. We're using
+     * this because
+     */
+    private fun createTileStateFlow() = repo.getFavoriteContacts()
+        .map { contacts -> MessagingTileState(contacts) }
+        .stateIn(
+            lifecycleScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     override suspend fun tileRequest(requestParams: TileRequest): Tile {
-        val tileState = readTileState()
-
+        Log.d("!!!", "messaging tile service = tileRequest")
+        val tileState = getLatestTileState()
+        Log.d("!!!", "messaging tile service = contacts: ${tileState.contacts}")
         return renderer.renderTimeline(tileState, requestParams)
     }
 
-    private suspend fun readTileState(): MessagingTileState {
-        var tileState = tileStateFlow.filterNotNull().first()
+    override suspend fun resourcesRequest(requestParams: ResourcesRequest): Resources {
+        Log.d("!!!", "messaging tile service = resourceRequest")
+        val tileState = getLatestTileState()
+        val images = fetchRequestedResources(tileState, requestParams)
+        return renderer.produceRequestedResources(images, requestParams)
+    }
+
+    private suspend fun getLatestTileState(): MessagingTileState {
+        var tileState = tileStateFlow.filterNotNull().last()
 
         if (tileState.contacts.isEmpty()) {
             updateContacts()
             tileState = tileStateFlow.filterNotNull().first()
         }
+
         return tileState
     }
 
+    /**
+     * If our data source (the repository) is empty/has stale data, this is where we could perform
+     * an update.
+     *
+     * For this sample, we're updating the repository with fake data
+     * ([MessagingRepository.knownContacts]).
+     */
     private suspend fun updateContacts() {
-        repo.updateContacts(MessagingRepo.knownContacts)
+        repo.updateContacts(MessagingRepository.knownContacts)
     }
 
-    override suspend fun resourcesRequest(requestParams: ResourcesRequest): Resources {
-        val tileState = readTileState()
-
-        val images = generateRequestedResources(tileState, requestParams)
-
-        return renderer.produceRequestedResources(images, requestParams)
-    }
-
-    private suspend fun generateRequestedResources(
+    private suspend fun fetchRequestedResources(
         tileState: MessagingTileState,
         requestParams: ResourcesRequest,
     ): Map<Contact, Bitmap> {

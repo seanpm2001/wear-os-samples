@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.wear.tiles
+package com.example.wear.tiles.messaging
 
-import android.app.Application
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import com.example.wear.tiles.di.AppContainer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.wear.tiles.material.Colors
 
-class TilesApplication : Application(), ImageLoaderFactory {
-    internal lateinit var appContainer: AppContainer
+object MessagingTileTheme {
+    val primary = Color.Black.toArgb()
+    val onPrimary = android.graphics.Color.parseColor("#AECBFA")
+    val surface = android.graphics.Color.parseColor("#6694DE")
+    val onSurface = android.graphics.Color.parseColor("#2B333E")
 
-    override fun onCreate() {
-        super.onCreate()
-
-        appContainer = AppContainer(this)
-    }
-
-    // Allows Coil ImageLoader singleton to work from anywhere
-    override fun newImageLoader(): ImageLoader = appContainer.imageLoader
+//    val colors = Colors(
+//
+//    )
 }
